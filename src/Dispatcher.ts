@@ -32,4 +32,10 @@ export class Dispatcher<T> {
   public dispatch(value: T): void {
     this.watchers.forEach(watcher => watcher(value));
   }
+  /**
+   * Remove all watchers from dispatcher.
+   */
+  public destroy(): void {
+    this.watchers.clear();
+  }
 }
