@@ -1,27 +1,27 @@
-export type IDispatcherWatcher<T> = (value: T) => any;
+export type IDispatcherListener<T> = (value: T) => any;
 
 export class Dispatcher<T> {
-  private watchers: Map<number, IDispatcherWatcher<T>>;
+  private listeners: Map<number, IDispatcherListener<T>>;
   /**
    * Create a map containing all the callbacks
    * which will be executed on updates.
    */
   constructor() {
-    this.watchers = new Map<number, IDispatcherWatcher<T>>();
+    this.listeners = new Map<number, IDispatcherListener<T>>();
   }
   /**
    * Add a callback to the dispatcher which will
    * be executed on updates.
    */
-  public watch(watcher: IDispatcherWatcher<T>): () => void {
+  public listen(listener: IDispatcherListener<T>): () => void {
     let id: number;
     do {
       id = Math.random();
-    } while (this.watchers.has(id));
-    this.watchers.set(id, watcher);
+    } while (this.listeners.has(id));
+    this.listeners.set(id, listener);
     return () => {
-      if (this.watchers.has(id)) {
-        this.watchers.delete(id);
+      if (this.listeners.has(id)) {
+        this.listeners.delete(id);
       }
     };
   }
@@ -30,12 +30,12 @@ export class Dispatcher<T> {
    * the callbacks as they are all executed.
    */
   public dispatch(value: T): void {
-    this.watchers.forEach(watcher => watcher(value));
+    this.listeners.forEach(listener => listener(value));
   }
   /**
-   * Remove all watchers from dispatcher.
+   * Remove all listeners from dispatcher.
    */
   public destroy(): void {
-    this.watchers.clear();
+    this.listeners.clear();
   }
 }
