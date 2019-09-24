@@ -18,11 +18,11 @@
   "scripts": {
     "start": "nodemon",
     "test": "mocha -r ts-node/register src/**/*.test.ts",
+    "prepublishOnly": "yarn build",
     "build": "yarn run clean && yarn run compile",
     "clean": "rm -rf lib",
     "compile": "tsc",
-    "lint": "tslint src/**/*",
-    "ship": "yarn run build && yarn publish"
+    "lint": "tslint src/**/*"
   },
   "devDependencies": {
     "nodemon": "^1.19.1",
