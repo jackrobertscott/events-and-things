@@ -1,32 +1,27 @@
-import { Dispatcher, IDispatcherListener } from './Dispatcher';
+import { Dispatcher, IDispatcherListener } from './Dispatcher'
 
 export interface IValue {
-  [name: string]: any;
-}
-
-export interface IStore<T> {
-  local?: string;
-  defaults: T;
+  [key: string]: any
 }
 
 export class Store<T extends IValue> {
-  private value: T;
-  private defaults: T;
-  private dispatcher: Dispatcher<T>;
-  private local?: string;
+  private value: T
+  private defaults: T
+  private dispatcher: Dispatcher<T>
+  private local?: string
 
-  constructor({ defaults, local }: IStore<T>) {
-    this.value = defaults;
-    this.defaults = defaults;
-    this.dispatcher = new Dispatcher<T>();
-    this.local = local;
+  constructor(initial: T, key?: string) {
+    this.value = initial
+    this.defaults = initial
+    this.dispatcher = new Dispatcher<T>()
+    this.local = key
     if (this.local) {
       try {
-        const data = localStorage.getItem(this.local);
-        this.value = data ? JSON.parse(data) : this.value;
+        const data = localStorage.getItem(this.local)
+        this.value = data ? JSON.parse(data) : this.value
       } catch (e) {
-        console.error(e);
-        localStorage.removeItem(this.local);
+        console.error(e)
+        localStorage.removeItem(this.local)
       }
     }
   }
@@ -36,38 +31,38 @@ export class Store<T extends IValue> {
       ...this.defaults,
       ...this.value,
       ...(data || {}),
-    };
+    }
     if (this.local) {
       try {
-        const update = JSON.stringify(this.value);
-        localStorage.setItem(this.local, update);
+        const update = JSON.stringify(this.value)
+        localStorage.setItem(this.local, update)
       } catch (e) {
-        console.error(e);
-        localStorage.removeItem(this.local);
+        console.error(e)
+        localStorage.removeItem(this.local)
       }
     }
-    this.dispatcher.dispatch(this.value);
+    this.dispatcher.dispatch(this.value)
   }
 
   public reset(): void {
-    this.value = { ...this.defaults };
+    this.value = { ...this.defaults }
     if (this.local) {
       try {
-        const update = JSON.stringify(this.value);
-        localStorage.setItem(this.local, update);
+        const update = JSON.stringify(this.value)
+        localStorage.setItem(this.local, update)
       } catch (e) {
-        console.error(e);
-        localStorage.removeItem(this.local);
+        console.error(e)
+        localStorage.removeItem(this.local)
       }
     }
-    this.dispatcher.dispatch(this.value);
+    this.dispatcher.dispatch(this.value)
   }
 
   public listen(listener: IDispatcherListener<T>): () => void {
-    return this.dispatcher.listen(listener);
+    return this.dispatcher.listen(listener)
   }
 
   public state(): T {
-    return { ...this.value };
+    return { ...this.value }
   }
 }

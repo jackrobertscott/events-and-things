@@ -1,2 +1,2 @@
-export * from './Dispatcher';
-export * from './Store';
+export * from './Dispatcher'
+export * from './Store'
