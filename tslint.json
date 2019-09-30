@@ -15,6 +15,7 @@
     "no-empty-interface": false,
     "no-object-literal-type-assertion": false,
     "no-console": false,
+    "curly": false,
     "jsx-no-multiline-js": false,
     "jsx-no-lambda": false,
     "jsx-curly-spacing": false
