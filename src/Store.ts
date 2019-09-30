@@ -10,9 +10,9 @@ export class Store<T extends IValue> {
   private dispatcher: Dispatcher<T>
   private local?: string
 
-  constructor(initial: T, key?: string) {
-    this.value = initial
-    this.defaults = initial
+  constructor(defaults: T, key?: string) {
+    this.value = defaults
+    this.defaults = defaults
     this.dispatcher = new Dispatcher<T>()
     this.local = key
     if (this.local) {
@@ -62,7 +62,7 @@ export class Store<T extends IValue> {
     return this.dispatcher.listen(listener)
   }
 
-  public state(): T {
+  public get state(): T {
     return { ...this.value }
   }
 }
