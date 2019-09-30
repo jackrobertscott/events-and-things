@@ -39,7 +39,7 @@ export class Store<T> {
   }
 
   public get state(): T {
-    return { ...this.value }
+    return this.value
   }
 
   private persist(data: T) {
