@@ -1,18 +1,14 @@
 import { Dispatcher, IDispatcherListener } from './Dispatcher'
 
-export interface IValue {
-  [key: string]: any
-}
-
-export class Store<T extends IValue> {
+export class Store<T> {
   private value: T
-  private defaults: T
+  private initial: T
   private dispatcher: Dispatcher<T>
   private local?: string
 
-  constructor(defaults: T, key?: string) {
-    this.value = defaults
-    this.defaults = defaults
+  constructor(initial: T, key?: string) {
+    this.value = initial
+    this.initial = initial
     this.dispatcher = new Dispatcher<T>()
     this.local = key
     if (this.local) {
@@ -26,35 +22,15 @@ export class Store<T extends IValue> {
     }
   }
 
-  public change(data?: Partial<T>): void {
-    this.value = {
-      ...this.defaults,
-      ...this.value,
-      ...(data || {}),
-    }
-    if (this.local) {
-      try {
-        const update = JSON.stringify(this.value)
-        localStorage.setItem(this.local, update)
-      } catch (e) {
-        console.error(e)
-        localStorage.removeItem(this.local)
-      }
-    }
+  public change(data: T): void {
+    this.value = data
+    this.persist(this.value)
     this.dispatcher.dispatch(this.value)
   }
 
   public reset(): void {
-    this.value = { ...this.defaults }
-    if (this.local) {
-      try {
-        const update = JSON.stringify(this.value)
-        localStorage.setItem(this.local, update)
-      } catch (e) {
-        console.error(e)
-        localStorage.removeItem(this.local)
-      }
-    }
+    this.value = this.initial
+    this.persist(this.value)
     this.dispatcher.dispatch(this.value)
   }
 
@@ -64,5 +40,17 @@ export class Store<T extends IValue> {
 
   public get state(): T {
     return { ...this.value }
+  }
+
+  private persist(data: T) {
+    if (this.local) {
+      try {
+        const update = JSON.stringify(data)
+        localStorage.setItem(this.local, update)
+      } catch (e) {
+        console.error(e)
+        localStorage.removeItem(this.local)
+      }
+    }
   }
 }
