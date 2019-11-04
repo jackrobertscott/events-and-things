@@ -18,16 +18,11 @@ export class Store<T> {
   /**
    * Set the stores state.
    */
-  public change(data: T): void {
-    this.value = data
-    this.persist(this.value)
-    this.dispatcher.dispatch(this.value)
-  }
-  /**
-   * Set the stores state using the previous state.
-   */
-  public patch(data: (current: T) => T): void {
-    this.value = data(this.value)
+  public change(data: T | ((current: T) => T)): void {
+    this.value =
+      typeof data === 'function'
+        ? (data as (current: T) => T)(this.value)
+        : (data as T)
     this.persist(this.value)
     this.dispatcher.dispatch(this.value)
   }
