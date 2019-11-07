@@ -1,19 +1,15 @@
-export type IDispatcherListener<T> = (value: T) => any
-
 export class Dispatcher<T> {
-  private listeners: Map<number, IDispatcherListener<T>>
+  private listeners: Map<number, (value: T) => void>
   /**
-   * Create a map containing all the callbacks
-   * which will be executed on updates.
+   * Create empty listener map.
    */
   constructor() {
-    this.listeners = new Map<number, IDispatcherListener<T>>()
+    this.listeners = new Map<number, (value: T) => void>()
   }
   /**
-   * Add a callback to the dispatcher which will
-   * be executed on updates.
+   * Add listener to this dispatcher.
    */
-  public listen(listener: IDispatcherListener<T>): () => void {
+  public listen(listener: (value: T) => void): () => void {
     let id: number
     do {
       id = Math.random()
@@ -26,14 +22,13 @@ export class Dispatcher<T> {
     }
   }
   /**
-   * Provide a new value which will be passed to
-   * the callbacks as they are all executed.
+   * Execute all listeners with the provided value.
    */
   public dispatch(value: T): void {
     this.listeners.forEach(listener => listener(value))
   }
   /**
-   * Remove all listeners from dispatcher.
+   * Remove all listeners.
    */
   public destroy(): void {
     this.listeners.clear()

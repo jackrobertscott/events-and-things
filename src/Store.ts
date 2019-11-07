@@ -1,4 +1,4 @@
-import { Dispatcher, IDispatcherListener } from './Dispatcher'
+import { Dispatcher } from './Dispatcher'
 
 export class Store<T> {
   private value: T
@@ -6,14 +6,25 @@ export class Store<T> {
   private dispatcher: Dispatcher<T>
   private local?: string
   /**
-   * Load the state from local host
-   * and initialise the store.
+   * Create store from initial value or local storage.
    */
   constructor(initial: T, key?: string) {
     this.local = key
     this.initial = initial
     this.value = this.load() || initial
     this.dispatcher = new Dispatcher<T>()
+  }
+  /**
+   * The current state of the store.
+   */
+  public get current(): T {
+    return this.value
+  }
+  /**
+   * Listen for changes to the store.
+   */
+  public listen(listener: (value: T) => void): () => void {
+    return this.dispatcher.listen(listener)
   }
   /**
    * Set the stores state.
@@ -23,7 +34,7 @@ export class Store<T> {
       typeof data === 'function'
         ? (data as (current: T) => T)(this.value)
         : (data as T)
-    this.persist(this.value)
+    this.save(this.value)
     this.dispatcher.dispatch(this.value)
   }
   /**
@@ -31,25 +42,19 @@ export class Store<T> {
    */
   public reset(): void {
     this.value = this.initial
-    this.persist(this.value)
+    this.save(this.value)
     this.dispatcher.dispatch(this.value)
   }
   /**
-   * Listen for changes to the store.
+   * Remove all listeners.
    */
-  public listen(listener: IDispatcherListener<T>): () => void {
-    return this.dispatcher.listen(listener)
-  }
-  /**
-   * The current state of the store.
-   */
-  public get state(): T {
-    return this.value
+  public destroy(): void {
+    this.dispatcher.destroy()
   }
   /**
    * Save data to the local storage.
    */
-  private persist(data: T) {
+  private save(data: T) {
     if (this.local) {
       try {
         const update = JSON.stringify(data)
