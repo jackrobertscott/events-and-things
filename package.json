@@ -1,7 +1,7 @@
 {
   "name": "events-and-things",
   "private": false,
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "A helpful set of classes which provide extra methods beyond plain JavaScript.",
   "license": "MIT",
   "main": "lib/index.js",
