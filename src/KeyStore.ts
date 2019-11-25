@@ -13,4 +13,10 @@ export class KeyStore<T extends { [key: string]: any }> extends Store<T> {
   public update(data: Partial<T>) {
     this.change(current => ({ ...current, ...data }))
   }
+  /**
+   * Allow users to override the default items.
+   */
+  public recreate(overrides: Partial<T> = {}) {
+    this.change({ ...this.initial, ...overrides })
+  }
 }

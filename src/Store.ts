@@ -1,10 +1,10 @@
 import { Dispatcher } from './Dispatcher'
 
 export class Store<T> {
-  private value: T
-  private initial: T
-  private dispatcher: Dispatcher<T>
-  private local?: string
+  protected value: T
+  protected initial: T
+  protected dispatcher: Dispatcher<T>
+  protected local?: string
   /**
    * Create store from initial value or local storage.
    */
@@ -41,9 +41,7 @@ export class Store<T> {
    * Set the store back to the defaults.
    */
   public reset(): void {
-    this.value = this.initial
-    this.save(this.value)
-    this.dispatcher.dispatch(this.value)
+    this.change(this.initial)
   }
   /**
    * Remove all listeners.
