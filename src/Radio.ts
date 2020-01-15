@@ -12,11 +12,16 @@ export class Radio<T> {
     node?: Window | null,
     options?: { origin?: string; key?: string }
   ) {
-    this.node = node || (window && window.parent)
+    this.node = node
+      ? node
+      : typeof window !== 'undefined'
+      ? window.parent
+      : undefined
     this.options = options || {}
     this.dispatcher = new Dispatcher()
     this.handler = (event: MessageEvent) => this.listener(event)
-    if (window) window.addEventListener('message', this.handler, false)
+    if (typeof window !== 'undefined')
+      window.addEventListener('message', this.handler, false)
   }
   /**
    * Send a message through the radio.
@@ -35,7 +40,8 @@ export class Radio<T> {
    * Remove all listeners.
    */
   public destroy(): void {
-    if (window) window.removeEventListener('message', this.handler, false)
+    if (typeof window !== 'undefined')
+      window.removeEventListener('message', this.handler, false)
     this.dispatcher.destroy()
   }
   /**
