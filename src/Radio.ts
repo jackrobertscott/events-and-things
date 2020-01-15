@@ -1,7 +1,7 @@
 import { Dispatcher } from './Dispatcher'
 
 export class Radio<T> {
-  private node: Window
+  private node?: Window
   private options: { origin?: string; key?: string }
   private dispatcher: Dispatcher<T>
   private handler: (event: MessageEvent) => void
@@ -12,18 +12,18 @@ export class Radio<T> {
     node?: Window | null,
     options?: { origin?: string; key?: string }
   ) {
-    this.node = node || window.parent
+    this.node = node || (window && window.parent)
     this.options = options || {}
     this.dispatcher = new Dispatcher()
     this.handler = (event: MessageEvent) => this.listener(event)
-    window.addEventListener('message', this.handler, false)
+    if (window) window.addEventListener('message', this.handler, false)
   }
   /**
    * Send a message through the radio.
    */
   public message(data: T): void {
     const value = { key: this.options.key, payload: data }
-    this.node.postMessage(value, this.options.origin || '*')
+    if (this.node) this.node.postMessage(value, this.options.origin || '*')
   }
   /**
    * Listen to values recieved and returns an unlistener.
@@ -35,7 +35,7 @@ export class Radio<T> {
    * Remove all listeners.
    */
   public destroy(): void {
-    window.removeEventListener('message', this.handler, false)
+    if (window) window.removeEventListener('message', this.handler, false)
     this.dispatcher.destroy()
   }
   /**

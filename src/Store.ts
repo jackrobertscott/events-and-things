@@ -53,7 +53,7 @@ export class Store<T> {
    * Save data to the local storage.
    */
   private save(data: T) {
-    if (this.local) {
+    if (this.local && localStorage) {
       try {
         const update = JSON.stringify(data)
         localStorage.setItem(this.local, update)
@@ -67,7 +67,7 @@ export class Store<T> {
    * Load the data from the local storage.
    */
   private load() {
-    if (this.local) {
+    if (this.local && localStorage) {
       try {
         const data = localStorage.getItem(this.local)
         return data && JSON.parse(data)
