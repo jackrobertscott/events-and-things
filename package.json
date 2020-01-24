@@ -32,5 +32,9 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-eslint-rules": "^5.4.0",
     "typescript": "^3.5.2"
+  },
+  "dependencies": {
+    "@types/js-cookie": "^2.2.4",
+    "js-cookie": "^2.2.1"
   }
 }

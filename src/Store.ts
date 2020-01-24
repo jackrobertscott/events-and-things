@@ -1,18 +1,28 @@
 import { Dispatcher } from './Dispatcher'
+import * as Cookies from 'js-cookie'
 
 export class Store<T> {
   protected value: T
   protected initial: T
   protected dispatcher: Dispatcher<T>
   protected local?: string
+  protected cookies: boolean
+  protected options?: Cookies.CookieAttributes
   /**
    * Create store from initial value or local storage.
    */
-  constructor(initial: T, key?: string) {
+  constructor(
+    initial: T,
+    key?: string,
+    cookies: boolean = false,
+    options?: Cookies.CookieAttributes
+  ) {
     this.local = key
     this.initial = initial
     this.value = this.load() || initial
     this.dispatcher = new Dispatcher<T>()
+    this.cookies = cookies
+    this.options = options
   }
   /**
    * The current state of the store.
@@ -53,13 +63,15 @@ export class Store<T> {
    * Save data to the local storage.
    */
   private save(data: T) {
-    if (this.local && typeof localStorage !== 'undefined') {
+    if (this.local && typeof window !== 'undefined') {
       try {
         const update = JSON.stringify(data)
-        localStorage.setItem(this.local, update)
+        if (this.cookies) Cookies.set(this.local, update, this.options)
+        else localStorage.setItem(this.local, update)
       } catch (e) {
         console.error(e)
-        localStorage.removeItem(this.local)
+        if (this.cookies) Cookies.remove(this.local, this.options)
+        else localStorage.removeItem(this.local)
       }
     }
   }
@@ -67,13 +79,16 @@ export class Store<T> {
    * Load the data from the local storage.
    */
   private load() {
-    if (this.local && typeof localStorage !== 'undefined') {
+    if (this.local && typeof window !== 'undefined') {
       try {
-        const data = localStorage.getItem(this.local)
+        const data = this.cookies
+          ? Cookies.get(this.local)
+          : localStorage.getItem(this.local)
         return data && JSON.parse(data)
       } catch (e) {
         console.error(e)
-        localStorage.removeItem(this.local)
+        if (this.cookies) Cookies.remove(this.local, this.options)
+        else localStorage.removeItem(this.local)
       }
     }
   }
