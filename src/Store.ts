@@ -6,7 +6,7 @@ export class Store<T> {
   protected initial: T
   protected dispatcher: Dispatcher<T>
   protected local?: string
-  protected cookies: boolean
+  protected usecookies: boolean
   protected options?: Cookies.CookieAttributes
   /**
    * Create store from initial value or local storage.
@@ -14,15 +14,15 @@ export class Store<T> {
   constructor(
     initial: T,
     key?: string,
-    cookies: boolean = false,
+    usecookies: boolean = false,
     options?: Cookies.CookieAttributes
   ) {
     this.local = key
     this.initial = initial
-    this.value = this.load() || initial
-    this.dispatcher = new Dispatcher<T>()
-    this.cookies = cookies
+    this.usecookies = usecookies
     this.options = options
+    this.dispatcher = new Dispatcher<T>()
+    this.value = this.load() || initial // ensure last statement
   }
   /**
    * The current state of the store.
@@ -66,11 +66,11 @@ export class Store<T> {
     if (this.local && typeof window !== 'undefined') {
       try {
         const update = JSON.stringify(data)
-        if (this.cookies) Cookies.set(this.local, update, this.options)
+        if (this.usecookies) Cookies.set(this.local, update, this.options)
         else localStorage.setItem(this.local, update)
       } catch (e) {
         console.error(e)
-        if (this.cookies) Cookies.remove(this.local, this.options)
+        if (this.usecookies) Cookies.remove(this.local, this.options)
         else localStorage.removeItem(this.local)
       }
     }
@@ -81,13 +81,13 @@ export class Store<T> {
   private load() {
     if (this.local && typeof window !== 'undefined') {
       try {
-        const data = this.cookies
+        const data = this.usecookies
           ? Cookies.get(this.local)
           : localStorage.getItem(this.local)
         return data && JSON.parse(data)
       } catch (e) {
         console.error(e)
-        if (this.cookies) Cookies.remove(this.local, this.options)
+        if (this.usecookies) Cookies.remove(this.local, this.options)
         else localStorage.removeItem(this.local)
       }
     }

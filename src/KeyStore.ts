@@ -8,10 +8,10 @@ export class KeyStore<T extends { [key: string]: any }> extends Store<T> {
   constructor(
     initial: T,
     key?: string,
-    cookies: boolean = false,
+    usecookies: boolean = false,
     options?: Cookies.CookieAttributes
   ) {
-    super(initial, key, cookies, options)
+    super(initial, key, usecookies, options)
   }
   /**
    * Add an update method which patches rather than sets.
